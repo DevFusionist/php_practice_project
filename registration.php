@@ -1,4 +1,10 @@
 <?php
+    session_start();
+    // Custom trim function
+    function custom_trim($input) {
+        return trim($input);
+    }
+
     // Logic to register a user (for now, just display sanitized input)
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_POST["password"])) {
         if (empty(trim($_POST['email'])) || empty(trim($_POST['password']))) {
@@ -13,23 +19,24 @@
             });
             </script>";
         } else {
-            $email    = htmlspecialchars($_POST["email"]);                   // Sanitize email to prevent XSS
-            $password = password_hash($_POST["password"], PASSWORD_DEFAULT); // Hash password for security
+            $email                         = htmlspecialchars($_POST["email"]);                   // Sanitize email to prevent XSS
+            $password                      = password_hash($_POST["password"], PASSWORD_DEFAULT); // Hash password for security
+            $_SESSION["users"]['password'] = $password;
             echo "<script>
-            localStorage.setItem('email', '$email');
-            localStorage.setItem('hashedPassword', '$password');
             document.addEventListener('DOMContentLoaded', function() {
                 var alertPlaceholder = document.getElementById('alert-placeholder');
                 var alert = document.createElement('div');
                 alert.className = 'alert alert-success';
                 alert.role = 'alert';
-                alert.innerHTML = 'Email and hashed password stored in local storage.';
+                alert.innerHTML = 'Registration Successfull, you can now login';
                 alertPlaceholder.appendChild(alert);
             });
-            setTimeout(function() {
-                    window.location.href = 'login.php';
-                }, 5000);
         </script>";
+            echo "<script>
+            setTimeout(function(){
+                window.location.href = 'login.php';
+            },3000)
+            </script>";
         }
     }
 ?>
